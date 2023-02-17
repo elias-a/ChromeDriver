@@ -14,6 +14,7 @@ setuptools.setup(
     url="https://github.com/elias-a/ChromeDriver",
     license="MIT",
     packages=["ChromeDriver"],
+    package_dir={ "" : "src" },
     install_requires=["selenium"],
 )
 
