@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ChromeDriver"
+authors = [
+    { name = "Elias Alstead", email = "elias.alstead@gmail.com" },
+]
+description = ""
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = ["Programming Language :: Python :: 3"]
+dependencies = ["selenium"]
+dynamic = ["version"]
+
