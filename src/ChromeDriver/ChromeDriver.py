@@ -8,7 +8,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 class ChromeDriver:
-
     def __init__(self, configPath):
         self.config = ConfigParser()
         self.config.read(configPath)
@@ -50,3 +49,4 @@ class ChromeDriver:
     def closeChrome(self):
         os.killpg(os.getpgid(self.chromeProcess.pid), signal.SIGTERM)
         self.driver.quit()
+
