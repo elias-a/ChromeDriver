@@ -1,7 +1,5 @@
-import sys
 import os
 import signal
-import pathlib
 import subprocess
 import chromedriver_binary
 from selenium import webdriver
@@ -39,7 +37,10 @@ class ChromeDriver:
             f"--user-data-dir={self._profile}",
         ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, preexec_fn=os.setsid)
 
-    def closeChrome(self):
+    def _killProcess(self):
         os.killpg(os.getpgid(self._process.pid), signal.SIGTERM)
+
+    def closeChrome(self):
+        self._killProcess()
         self.driver.quit()
 
