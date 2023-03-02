@@ -1,46 +1,39 @@
 import os
-import signal
-import subprocess
-import chromedriver_binary
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+import re
+import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class ChromeDriver:
-    def __init__(self, path, port, profile):
-        self._path = path
-        self._port = port
+    def __init__(self, profile = None, chromeVersion = None):
         self._profile = profile
+        self._chromeVersion = chromeVersion if chromeVersion is not None else self._getSystemChromeVersion()
         self.driver = None
-        self._process = None
 
-    @staticmethod
-    def _isPortOpen(port):
-        completedProcess = subprocess.run(["lsof", f"-i:{port}"], 
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        return completedProcess.returncode != 0
+    def _getSystemChromeVersion(self):
+        chromePath = "/usr/bin/google-chrome"
+        version = os.popen(f"{chromePath} --version").read()
+        match = re.search("Google Chrome ([0-9]+)", version)
+
+        if match is None or len(match.groups()) < 1:
+            raise Exception(f"Cannot get Chrome version from: {version}.")
+
+        try:
+            return int(match.group(1))
+        except ValueError:
+            raise Exception(f"Cannot convert major version to type \"int\": {match.group(1)}.")
 
     def initDriver(self):
-        if ChromeDriver._isPortOpen(self._port):
-            self._openChrome()
-        else:
-            raise Exception(f"Port {self._port} is taken")
+        self.driver = uc.Chrome(user_data_dir=self._profile, version_main=self._chromeVersion)
 
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument(f"--remote-debugging-port={self._port}")
-        self.driver = webdriver.Chrome(options=options)
+    def enterInput(self, xPath, text, timeout = 7):
+        isLoaded = EC.presence_of_element_located((By.XPATH, xPath))
+        element = WebDriverWait(self.driver, timeout).until(isLoaded)
+        element.send_keys(text)
 
-    def _openChrome(self):
-        self._process = subprocess.Popen([
-            self._path,
-            f"--remote-debugging-port={self._port}",
-            f"--user-data-dir={self._profile}",
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, preexec_fn=os.setsid)
-
-    def _killProcess(self):
-        os.killpg(os.getpgid(self._process.pid), signal.SIGTERM)
-
-    def closeChrome(self):
-        self._killProcess()
-        self.driver.quit()
+    def clickElement(self, xPath, timeout = 7):
+        isLoaded = EC.element_to_be_clickable((By.XPATH, xPath))
+        element = WebDriverWait(self.driver, timeout).until(isLoaded)
+        self.driver.execute_script("arguments[0].click();", element)
 

@@ -11,6 +11,6 @@ description = ""
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = ["Programming Language :: Python :: 3"]
-dependencies = ["selenium", "chromedriver_binary_auto", "pytest"]
+dependencies = ["selenium", "undetected-chromedriver", "pytest"]
 dynamic = ["version"]
 

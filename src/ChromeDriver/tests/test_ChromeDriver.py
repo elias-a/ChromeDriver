@@ -1,28 +1,30 @@
+import re
+import tempfile
 from unittest import TestCase
 from unittest.mock import Mock
 from selenium import webdriver
-from subprocess import CompletedProcess
 from ..ChromeDriver import ChromeDriver
 
 class TestChromeDriver(TestCase):
     def setUp(self):
-        self.chrome = Mock(str)
-        self.port = 18888
-        self.profile = Mock(str)
-        self.chromedriver = ChromeDriver(self.chrome, self.port, self.profile)
+        with tempfile.TemporaryDirectory() as directory:
+            self._directory = directory
+            self.chromedriver = ChromeDriver(profile=directory)
 
     def test_initDriver(self):
-        self.chromedriver._openChrome = Mock(None, side_effect=self.createProcess)
         self.chromedriver.initDriver()
-        assert isinstance(self.chromedriver._process, CompletedProcess)
         assert isinstance(self.chromedriver.driver, webdriver.chrome.webdriver.WebDriver)
-        assert ChromeDriver._isPortOpen(self.port) is False
+        assert self.chromedriver.driver.user_data_dir == self._directory
+        
+        version = self.chromedriver.driver.capabilities["browserVersion"]
+        match = re.search("([0-9]+)", version)
+        assert match is not None
+        assert len(match.groups()) == 1
+        assert isinstance(int(match.group(1)), int)
 
-    def test_closeChrome(self):
-        self.chromedriver._killProcess = Mock(None)
-        self.chromedriver.driver = webdriver.chrome.webdriver.WebDriver()
-        self.chromedriver.closeChrome()
+    def test_enterInput(self):
+        pass
 
-    def createProcess(self):
-        self.chromedriver._process = Mock(CompletedProcess)
+    def test_clickElement(self):
+        pass
 
