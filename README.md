@@ -16,7 +16,7 @@ ChromeDriver wraps functionality commonly used when creating automated scripts. 
 To install the package, run
 
 ```
-pip install https://github.com/elias-a/ChromeDriver.git
+pip install git+https://github.com/elias-a/ChromeDriver.git
 ```
 
 ## Usage
