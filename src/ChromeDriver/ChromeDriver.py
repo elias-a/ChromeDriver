@@ -6,9 +6,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class ChromeDriver:
-    def __init__(self, profile = None, chromeVersion = None):
+    def __init__(self, profile = None, chromeVersion = None, options = {}):
         self._profile = profile
         self._chromeVersion = chromeVersion if chromeVersion is not None else self._getSystemChromeVersion()
+        self._options = options if options is not None else {}
         self.driver = None
 
     def _getSystemChromeVersion(self):
@@ -25,7 +26,16 @@ class ChromeDriver:
             raise Exception(f"Cannot convert major version to type \"int\": {match.group(1)}.")
 
     def initDriver(self):
-        self.driver = uc.Chrome(user_data_dir=self._profile, version_main=self._chromeVersion)
+        self.driver = uc.Chrome(
+            user_data_dir=self._profile,
+            version_main=self._chromeVersion,
+            options=self._addOptions())
+
+    def _addOptions(self):
+        options = uc.ChromeOptions()
+        [options.add_experimental_option(k, v) for k, v in self._options.items()]
+
+        return options
 
     def enterInput(self, xPath, text, timeout = 7):
         isLoaded = EC.presence_of_element_located((By.XPATH, xPath))
