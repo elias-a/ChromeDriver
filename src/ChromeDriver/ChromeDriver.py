@@ -19,13 +19,12 @@ class ChromeDriver:
         [options.add_experimental_option(k, v) for k, v in opts.items()]
         return options
 
-    def enterInput(self, xPath, text, timeout = 7):
-        isLoaded = EC.presence_of_element_located((By.XPATH, xPath))
-        element = WebDriverWait(self.driver, timeout).until(isLoaded)
+    def send_keys(self, xpath, text, timeout=10):
+        is_loaded = EC.presence_of_element_located((By.XPATH, xpath))
+        element = WebDriverWait(self.driver, timeout).until(is_loaded)
         element.send_keys(text)
 
-    def clickElement(self, xPath, timeout = 7):
-        isLoaded = EC.element_to_be_clickable((By.XPATH, xPath))
-        element = WebDriverWait(self.driver, timeout).until(isLoaded)
+    def click(self, xpath, timeout=10):
+        is_loaded = EC.element_to_be_clickable((By.XPATH, xpath))
+        element = WebDriverWait(self.driver, timeout).until(is_loaded)
         self.driver.execute_script("arguments[0].click();", element)
-
