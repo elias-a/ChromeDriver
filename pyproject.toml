@@ -1,16 +1,18 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "ChromeDriver"
+version = "1.0.1"
 authors = [
-    { name = "Elias Alstead", email = "elias.alstead@gmail.com" },
+  {name = "Elias Alstead", email = "elias.alstead@gmail.com"},
 ]
-description = ""
+description = "Class to simplify Chrome automation"
 readme = "README.md"
 requires-python = ">=3.11"
-classifiers = ["Programming Language :: Python :: 3"]
-dependencies = ["selenium", "undetected-chromedriver", "pytest"]
-dynamic = ["version"]
-
+dependencies = ["selenium", "undetected-chromedriver"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+]
