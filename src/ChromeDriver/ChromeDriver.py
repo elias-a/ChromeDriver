@@ -32,3 +32,7 @@ class ChromeDriver:
         is_loaded = EC.element_to_be_clickable((By.XPATH, xpath))
         element = WebDriverWait(self.driver, self.timeout).until(is_loaded)
         self.driver.execute_script("arguments[0].click();", element)
+
+    def wait(self, xpath):
+        is_loaded = EC.presence_of_element_located((By.XPATH, xpath))
+        WebDriverWait(self.driver, self.timeout).until(is_loaded)
