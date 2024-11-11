@@ -1,40 +1,22 @@
-import os
-import re
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 class ChromeDriver:
-    def __init__(self, profile = None, chromeVersion = None, options = {}):
-        self._profile = profile
-        self._chromeVersion = chromeVersion if chromeVersion is not None else self._getSystemChromeVersion()
-        self._options = options if options is not None else {}
-        self.driver = None
+    def __init__(self, user_data_dir, headless=False):
+        self.driver = self._init_driver(user_data_dir, headless)
 
-    def _getSystemChromeVersion(self):
-        chromePath = "/usr/bin/google-chrome"
-        version = os.popen(f"{chromePath} --version").read()
-        match = re.search("Google Chrome ([0-9]+)", version)
+    def __del__(self):
+        self.driver.quit()
 
-        if match is None or len(match.groups()) < 1:
-            raise Exception(f"Cannot get Chrome version from: {version}.")
+    def _init_driver(self, user_data_dir, headless):
+        return uc.Chrome(user_data_dir=user_data_dir, headless=headless)
 
-        try:
-            return int(match.group(1))
-        except ValueError:
-            raise Exception(f"Cannot convert major version to type \"int\": {match.group(1)}.")
-
-    def initDriver(self):
-        self.driver = uc.Chrome(
-            user_data_dir=self._profile,
-            version_main=self._chromeVersion,
-            options=self._addOptions())
-
-    def _addOptions(self):
+    def _add_options(self, opts):
         options = uc.ChromeOptions()
-        [options.add_experimental_option(k, v) for k, v in self._options.items()]
-
+        [options.add_experimental_option(k, v) for k, v in opts.items()]
         return options
 
     def enterInput(self, xPath, text, timeout = 7):
